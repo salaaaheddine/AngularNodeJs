@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 
 router.get('/:email', (req, res) => {
     const email = req.params.email
-    User.findOne({ email })
+    userCrud.findOne({ email })
         .then(user => {
             if (user)
                 res.send(user)
@@ -27,7 +27,7 @@ router.get('/:email', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    User.create(req.body)
+    userCrud.create(req.body)
         .then(data => res.status(201).send(data))
         .catch(err => console.log(err))
 })
