@@ -2,17 +2,16 @@ const bycrypt = require('bcryptjs')
 exports.generateCrudMethods = Model => {
     return {
         getAll: () => Model.find(),
-        getByEmail: email => Model.findOne({email}),
-        create: async record => {
+        getById: id => Model.findById(id),
+        getByEmail: record => {
+            const email = record.email
+            return Model.findOne({email})
+        },
+        hashPassword: async record => {
             const salt = await bycrypt.genSalt(10)
-            const hashedPassword = await bycrypt.hash(record.password, salt)
-            const newRecord = new Model({
-                "fullname": record.fullname,
-                "email": record.email,
-                "password": hashedPassword
-            })
-            const savedRecord = await newRecord.save()
-            return savedRecord
-        }
+            record.password = await bycrypt.hash(record.password, salt)
+            return record},
+        create: record => Model.create(record),
+        passwordMatch: async (record, hashedPassword) => await bycrypt.compare(record.password, hashedPassword)
     }
 }
