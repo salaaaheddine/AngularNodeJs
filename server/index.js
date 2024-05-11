@@ -1,6 +1,6 @@
 const express = require("express")
 const cors = require('cors')
-
+const cookieParser = require('cookie-parser')
 
 
 //local imports
@@ -13,12 +13,13 @@ const app = express()
 
 
 //middleware
-// app.use(cors({
-//     credentials: true,
-//     origin: 'http://localhost:4200'}))
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:4200'}))
 
+app.use(cookieParser())
 app.use(express.json())
-app.use('/api/user', userRoutes)
+app.use('/api', userRoutes)
 app.use(errorHundler)
 
 connectDB()
