@@ -7,9 +7,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor() { }
+  fullName = '';
+  email = '';
+  password = '';
+  errorMessage = '';
 
   ngOnInit(): void {
+      
   }
 
+  onSubmit() {
+    // Implement your login logic here
+    // This example just simulates successful login
+    this.fullName = '';
+    this.password = '';
+    // You might redirect to another page or perform other actions
+  }
 }
