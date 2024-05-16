@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
+const fs = require('fs').promises;
 
 const User = require("../models/user.model")
-const { generateCrudMethods } = require("../services/")
+const { generateCrudMethods } = require("../services/");
+const { EventEmitterAsyncResource } = require('events');
 
 const userCrud = generateCrudMethods(User)
 
@@ -46,14 +48,40 @@ router.get('/user', async (req, res, next) => {
         const { password, ...rest } = user
         res.status(200).send(rest)
     } catch {
-        return res.status(400).send({ message: 'Unauthenticated' })
+        return res.status(400).send({ message: "Unauthenticated" })
     }
 
 })
 
 router.post('/logout', (req, res, next) => {
-    res.cookie('jwt', '', { maxAge: 0 })
-    res.send({ message: 'success' })
+    res.clearCookie('jwt');
+    res.status(200).send({ message: 'Logged out' });
 })
+
+router.post('/update', (req, res) => {
+    const { _id, data } = req.body
+    User.findOneAndUpdate({_id: _id}, data).then((data) => {
+        console.log(JSON.stringify(data))
+        res.clearCookie('jwt');
+        const token = jwt.sign({_id: res._id }, "secret")
+        res.cookie('jwt', token, { httpOnly: true, maxAge: 24 * 3600 * 1000 })
+        res.status(200).send({ message: 'Success' })
+    }
+    )
+})
+
+// router.get('/files', async (req, res) => {
+//     try {
+//       const files = await fs.readdir('C:/Projects/MEAN-App/server')
+//       const fileData = files.map(file => ({
+//         name: file,
+//       }))
+//       res.status(200).json(fileData);
+//     } catch (error) {
+//       console.error('Error retrieving project file metadata:', error);
+//       res.status(500).send({ message: 'Internal server error' });
+//     }
+//   });
+
 
 module.exports = router
